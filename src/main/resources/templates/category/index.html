@@ -12,7 +12,7 @@
             <h1 class="text-primary">Categorias</h1>
             <hr>
             <!--     **************************************************************       -->
-            <button class="btn btn-primary">Adicionar Categoria</button>
+            <a th:href="@{/categories/create}" class="btn btn-primary">Adicionar Produto</a>
             <table class="table">
                 <thead>
                     <th>ID</th>
@@ -23,16 +23,77 @@
                     <tr th:each="category : ${categories}">
                         <td th:text="${category.id}"></td>
                         <td th:text="${category.name}"></td>
-                        <td> <button class="btn btn-primary">Visualizar</button> </td>
-                        <td> <button class="btn btn-info">Editar</button> </td>
-                        <td> <button class="btn btn-danger">Excluir</button> </td>
+                        <td>
+                            <button th:onclick="getCategoryById([[${category.id}]])" type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#viewModal">Visualizar</button>
+                        </td>
+
+                        <td> <a th:href="${'/categories/' + category.id + '/edit'}"  class="btn btn-info">Editar</a> </td>
+                        <td>
+                            <form class="delete-form" th:action="@{/categories/{id}(id=${category.id})}" method="post">
+
+                                <input type="hidden" name="_method" value="delete">
+                                <button type="submit" class="btn btn-danger">
+                                    Excluir
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                 </tbody>
 
             </table>
+            <div th:replace="~{_fragments/toast :: toast(${message})}"></div>
 
+            <!-- add the script to modal        -->
+            <script th:src="@{/js/modal.js}"></script>
 
-            <!--     **************************************************************       -->
+            <script>
+                document.querySelectorAll('.delete-form').forEach(form => {
+                    form.addEventListener("submit", async (e) => {
+                        e.preventDefault();
+                        const confirm = await showConfirmModal("Confirme", "Deseja excluir essa categoria?");
+                        if(confirm){
+                            form.submit();
+                        }
+                    })
+                })
+            </script>
+
+            <script>
+                <!--  create an asynchronous function   -->
+                async function getCategoryById(id) {
+                    <!-- perform the request   -->
+                    const response = await fetch(`/categories/${id}/show`)
+                    <!-- verifies the response status        -->
+                    if(!response.ok){
+                        alert(`Erro: HTTP ${response.status}`);
+                    } else {
+                         const category = await response.json();
+                         document.getElementById("categoryName").innerHTML = category.name
+                    }
+                }
+            </script>
+
+            <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewModalLabel">Exibir Categoria</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6">
+                                    <p id="categoryName"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </main>

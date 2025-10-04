@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<!-- replacing the head with title  -->
+<head th:replace="~{_layouts/base :: head(~{::title})}">
+    <title th:fragment="title">Nova Categoria</title>
+</head>
+<body>
+<!-- replacing the main content -->
+<main th:replace="~{_layouts/base :: layout(~{::content})}">
+    <div th:fragment="content">
+        <div style="min-height: 600px" class="p-3">
+            <form th:action="@{/categories}" th:object="${category}" method="post" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nome</label>
+                    <!--the field is the same name of object attribute  -->
+                    <input type="text" class="form-control" th:field="*{name}" required>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary" type="submit">Salvar</button>
+                    <button class="btn btn-secondary" type="reset">Limpar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
+
